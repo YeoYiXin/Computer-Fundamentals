@@ -1,0 +1,36 @@
+CHIP MyOr8Way {
+    IN in[8];
+    OUT out;
+
+    PARTS:
+//Since there are 8 inputs, I will need 7 OR gates (all accepting 2 inputs only).
+//The first step is 4 OR gates, each accepting 2 inputs.
+//Then, each OR gate will produce one output.
+//Now, I will have a total of 4 outputs from the first step.
+//From this, I will do the second step, which will require 2 OR gates, each accepting 2 inputs.
+//Then, the OR gate will produe one output which ultimately leave me with 2 outputs from the second step.
+//Finally, the 2 outputs from the second step will be used as the input for the 7th OR gate.
+//After that, we will get the result which is named as out variable.
+
+//1st OR gate taking the 1st and 2nd boolean value of in variable for the case and then determine the output.
+Or(a=in[0], b=in[1], out=in01); 
+
+//2nd OR gate taking the 3rd and 4th boolean value of in variable for the case and then determine the output.
+Or(a=in[2], b=in[3], out=in23);
+
+//3rd OR gate taking the 5th and 6th boolean value of in variable for the case and then determine the output.
+Or(a=in[4], b=in[5], out=in45);
+
+//4th OR gate taking the 7th and 8th boolean value of in variable for the case and then determine the output.
+Or(a=in[6], b=in[7], out=in67);
+
+//5th OR gate taking the output for 1st and 2nd OR gate as its input and then it will determine the output.
+Or(a=in01, b=in23, out=in0123);
+
+//6th OR gate taking the output for 3rd and 4th OR gate as its input and then it will determine the output.
+Or(a=in45, b=in67, out=in4567);
+
+//7th OR gate taking the output for 5th and 6th OR gate as its input and then it will determine the final output.
+Or(a=in0123, b=in4567, out=out);
+
+}

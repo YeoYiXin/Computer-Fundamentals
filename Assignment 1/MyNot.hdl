@@ -1,0 +1,12 @@
+CHIP MyNot
+{
+IN a;
+OUT out;
+
+PARTS:
+//NOT gate can be created by using just one NAND gate which accepts two inputs but both inputs are of the same
+//value.
+//This NOT gate is only 1 bit wide
+	Nand(a=a,b=a,out=out);
+
+}

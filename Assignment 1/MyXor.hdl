@@ -1,0 +1,17 @@
+CHIP MyXor{
+IN a,b;
+OUT out;
+
+PARTS:
+//This is for XOR gate
+//require 1 OR gate, 2 NOT gate, 2 AND gate
+//since XOR gate can only be build using NAND gate
+//XOR boolean expression:
+//P(x, y) = xy'+x'y
+
+Nand(a=a, b=b , out=temp1 );
+Nand(a=a , b=temp1 , out=temp2 );
+Nand(a=temp1 , b=b , out=temp3 );
+Nand(a=temp2 , b=temp3 , out=out );
+
+}

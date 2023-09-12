@@ -1,0 +1,21 @@
+CHIP MyFulladder{
+IN a,b,c;
+OUT sum, carry;
+
+PARTS:
+// Since this is a full adder and we need to combine two half adder, 
+// we can make the implementation shorter by adding in the built-in chip which is the
+// MyHalfadder chip into the MyFulladder chip.
+// The first half adder will receive two input which is a and b,
+// while the second half adder will receive one input from the sum value of the first half adder
+// as the a and c will be the second input for the second half adder.
+// One of the output of the 2nd half adder which is obtained from the Xor gate (sum) will
+// be the sum of the full adder,
+// whereas the carry values of both the first and second half adder will be use as inputs for the OR gate 
+// so that there will be only 1 carry value instead of 2 carry values for full adder.
+
+MyHalfadder(a=a, b=b, sum=ab1, carry=ab2); //first half adder
+MyHalfadder(a=ab1, b=c, sum=sum, carry=abc2); //second half adder and sum value of full adder
+Or(a=abc2, b=ab2, out=carry); //carry value of full adder
+
+}

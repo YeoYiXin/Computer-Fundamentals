@@ -1,0 +1,42 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/03/b/RAM4K.hdl
+
+/**
+ * Memory of 4K registers, each 16 bit-wide. Out holds the value
+ * stored at the memory location specified by address. If load==1, then 
+ * the in value is loaded into the memory location specified by address 
+ * (the loaded value will be emitted to out from the next time step onward).
+ */
+
+CHIP RAM4K {
+    IN in[16], load, address[12];
+    OUT out[16];
+
+    PARTS:
+ 	//Since RAM4K which is 4096 memory location is memory which is 16-bits wide, 
+	//we need to connect 8 RAM512
+	//To build RAM4K, we need DMux and Mux which are 16 bits wide
+	//With this, I can use the chip I build in Task B which is 
+	//DMux8Way and use load as input, and address[9..11] as sel
+	//which will then produce 8 outputs for the RAM64 which sel is address[0..8]
+	//and after that, the outputs will go through multiplexor
+	//which is Mux8Way8 with sel as address[9..11]
+
+	//for DMux
+	DMux8Way(in=load, sel=address[9..11], a=s1, b=s2, c=s3, d=s4, e=s5, f=s6, g=s7, h=s8);
+
+	//connext 8 ram
+	RAM512(in=in, load=s1, address=address[0..8], out=q1);
+	RAM512(in=in, load=s2, address=address[0..8], out=q2);
+	RAM512(in=in, load=s3, address=address[0..8], out=q3);
+	RAM512(in=in, load=s4, address=address[0..8], out=q4);
+	RAM512(in=in, load=s5, address=address[0..8], out=q5);
+	RAM512(in=in, load=s6, address=address[0..8], out=q6);
+	RAM512(in=in, load=s7, address=address[0..8], out=q7);
+	RAM512(in=in, load=s8, address=address[0..8], out=q8);
+
+	//for mux
+	Mux8Way16(a=q1, b=q2, c=q3, d=q4, e=q5, f=q6, g=q7, h=q8, sel=address[9..11], out=out);
+}

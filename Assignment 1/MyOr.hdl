@@ -1,0 +1,18 @@
+CHIP MyOr{
+IN a,b;
+OUT out;
+
+PARTS:
+//This is to build Or gate with only NAND gate. 
+//To build OR gate, we need 3 NAND gates, where the first line of gates will be the 2 OR gates
+//each accepting two inputs, the value of inputs for each OR gates will be the same which means
+//the first NAND gate will receive two inputs from the same variable name which is 'a' input
+//while the second NAND gate will receive two inputs from the other variable which is the 'b' input.
+//The output from the first two NAND gates will be combined as the inputs for the third NAND gate,
+//which will then gives the final output, which is equivalent to the logic gates of an OR gate.
+Nand(a=a, b=a, out=temp1);
+Nand(a=b, b=b, out=temp2);
+Nand(a=temp1, b=temp2, out=out);
+
+}
+

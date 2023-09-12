@@ -1,0 +1,12 @@
+CHIP MyHalfadder{
+IN a,b;
+OUT sum, carry;
+
+PARTS:
+// Since half adder have 2 inputs and 2 outputs, there will be 1 XOR gate and 1 AND gate
+// XOR gate is used to prevent the output is 10 when both input A and B are 1.
+// MyHalfadder will be used as the built-in chip for the MyFulladder
+Xor(a=a, b=b, out=sum);
+And(a=a, b=b, out=carry);
+
+}

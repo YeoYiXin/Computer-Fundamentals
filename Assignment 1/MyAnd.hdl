@@ -1,0 +1,12 @@
+CHIP MyAnd{
+IN a,b;
+OUT out;
+
+PARTS:
+//This is to produce AND gate and to produce AND gate,
+//we have to connect 2 NAND together to produce the logic gates which is equivalent
+//to an AND gate.
+Nand(a=a, b=b, out=temp);
+Nand(a=temp, b=temp, out=out);
+
+}

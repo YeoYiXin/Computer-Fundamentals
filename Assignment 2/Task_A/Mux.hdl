@@ -1,0 +1,27 @@
+/** 
+ * Multiplexor:
+ * out = a if sel == 0
+ *       b otherwise
+ */
+
+CHIP Mux {
+    IN a, b, sel;
+    OUT out;
+
+    PARTS:
+//Based on the Mux.cmp folder, I can determine what gate to use after forming a boolean
+//expression when out=1 in which the two inputs are A and B and selector is S
+//P(A, B, S) = A'BS + AB'S' + ABS' + ABS
+//           = BS(A' + A) + AB'S' + ABS'
+//           = BS1 + AB'S' + ABS'      [Inverse Law]
+//           = BS + AB'S' + ABS'
+//           = BS + AS'[B' + B]
+//           = BS + AS'1               [Inverse Law]
+//P(A, B, S) = BS + AS' 
+//From this equation, I know that I need 2 AND gate, 1 NOT gate and 1 OR gate
+
+	Not(in=sel, out=sel1);
+	And(a=b, b=sel, out=zerosel);
+	And(a=sel1, b=a, out=onesel);
+	Or(a=zerosel, b=onesel, out=out);
+}

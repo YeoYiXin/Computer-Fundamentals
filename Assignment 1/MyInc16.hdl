@@ -1,0 +1,19 @@
+CHIP MyInc16 {
+    IN in[16];
+    OUT out[16];
+
+    PARTS:
+//Since MyInc16 means 2's complement which is adding 1 to the 16-bits input,
+//then we can use the built-in chip which is MyAdd16
+//by initialising the a and b inputs as in and true/false and out that accepts 16-bits long output.
+//Only the first bit will increase by one and hence b[0] will be true as true value always return 1.
+//The others will not be added with one so the other value which is bit number 1 to 15 will be assigned
+//with the value false which is 0.
+//Hence, it means that the value of other bits other than the first bit will not change
+//unless the first bit has the value 1, which means it will carry 1 to the next bit
+//in which 1 will be added to the next bit and this will continue until the next bit is 0.
+//When the next bit is 0, it means that the 0 will add with the cary '1' and becomes 1 (no overflow).
+
+MyAdd16(a=in[0..15], b[0]=true, b[1..15]=false, out=out[0..15]);
+
+}

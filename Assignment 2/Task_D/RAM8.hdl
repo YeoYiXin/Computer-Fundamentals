@@ -1,0 +1,44 @@
+// This file is adapted from part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+
+/**
+ * Memory of 8 registers, each 8 bit-wide. Out holds the value
+ * stored at the memory location specified by address. If load==1, then 
+ * the in value is loaded into the memory location specified by address 
+ * (the loaded value will be emitted to out from the next time step onward).
+ */
+
+CHIP RAM8 {
+    IN in[8], load, address[3];
+    OUT out[8];
+
+    PARTS:
+	//Since RAM8 is memory of 8 registers, we need to connect 8 Registers
+	//which are all 8-bits wide.
+	//Hence, I can connect RAM8 with the registers I built.
+	//To build RAM8, we need DMux and Mux which are 8 bits wide
+	//With this, I can use the chip I build in Task B which is 
+	//DMux8Way and use load as input, and address as sel
+	//which will then produce 8 outputs for the registers
+	//and after that, the outputs will go through multiplexor
+	//which is Mux8Way8
+
+	//for DMux
+	DMux8Way(in=load, sel=address, a=s1, b=s2, c=s3, d=s4, e=s5, f=s6, g=s7, h=s8);
+
+	//connext 8 registers
+	Register(in=in, load=s1, out=q1);
+	Register(in=in, load=s2, out=q2);
+	Register(in=in, load=s3, out=q3);
+	Register(in=in, load=s4, out=q4);
+	Register(in=in, load=s5, out=q5);
+	Register(in=in, load=s6, out=q6);
+	Register(in=in, load=s7, out=q7);
+	Register(in=in, load=s8, out=q8);
+
+	//for mux
+	Mux8Way8(a=q1, b=q2, c=q3, d=q4, e=q5, f=q6, g=q7, h=q8, sel=address, out=out);
+
+
+}

@@ -1,0 +1,91 @@
+
+/**
+ * The MyALU. is the ALU of YOUR OWN design that provides the same functions as in the Nand2Tetris project + additional functions (and uses different control bits.
+ * Computes one of the following functions:
+ * x+y, x-y, y-x, 0, 1, -1, x, y, -x, -y, !x, !y,
+ * x+1, y+1, x-1, y-1, x&y, x|y , x XOR y, on two 16-bit inputs, 
+ * according to 6 input bits denoted zx,nx,zy,ny,f,no.
+ * In addition, the ALU computes two 1-bit outputs:
+ * if the ALU output == 0, zr is set to 1; otherwise zr is set to 0;
+ * if the ALU output < 0, ng is set to 1; otherwise ng is set to 0.
+ */
+
+// Implementation: the ALU logic manipulates the x and y inputs
+
+
+CHIP MyALU {
+    IN  
+        x[16], y[16],  // 16-bit inputs        
+        C0, // Control Bit 0 (Least significant) 
+        C1, // Control Bit 1
+        C2, // Control Bit 2
+        C3,  // Control Bit 3
+		C4;  // Control Bit 4 (Most significant - 5th Control bit)
+        
+
+    OUT 
+        out[16], // 16-bit output
+        zr, // 1 if (out == 0), 0 otherwise
+        ng; // 1 if (out < 0),  0 otherwise
+
+    PARTS:
+
+//C0, C1, C2
+//-1, x', y', -x
+Not16(in=false, out=nfalse);
+Not16(in=x, out=nx);
+Not16(in=y, out=ny);
+Inc16(in=nx, out=incnx);
+
+//a=0, b=1, c=-1, d=x, e=y, f=x', g=y', h=-x
+Mux8Way16(a[0..15]=false, b[0]=true, c=nfalse, d=x, e=y, f=nx, g=ny, h=incnx, sel[0]=C0, sel[1]=C1, sel[2]=C2, out=out1);
+
+//-y, x+1
+Inc16(in=ny, out=incny);
+Inc16(in=x, out=incx);
+
+//y+1 and x-1
+Inc16(in=y, out=incy);
+Add16(a=x, b=nfalse, out=addxminusone); 
+
+//y-1 and x+y
+Add16(a=y, b=nfalse, out=addyminusone);
+Add16(a=x, b=y, out=xplusy);
+
+//x-y and y-x
+Add16(a=x, b=incny, out=xminusy);
+Add16(a=y, b=incnx, out=yminusx);
+
+//a=-y, b=x+1, c=y+1, d=x-1, e=y-1, f=x+y, g=x-y, h=y-x
+Mux8Way16(a=incny, b=incx, c=incy, d=addxminusone, e=addyminusone, f=xplusy, g=xminusy, h=yminusx, sel[0]=C0, sel[1]=C1, sel[2]=C2, out=out2);
+
+//xy and x|y 
+And16(a=x, b=y, out=xandy);
+Or16(a=x, b=y, out=xory);
+Mux16(a=xandy, b=xory, sel=C0, out=out3);
+
+//out3 and x xor y
+Xor16(a=x, b=y, out=xxory);
+Mux16(a=out3, b=xxory, sel=C1, out=out4);
+
+//C3
+Mux16(a=out1, b=out2, sel=C3, out=out5);
+
+//C4 - final output
+//out5 and out4
+Mux16(a=out5, b=out4, sel=C4, out[0..7]=tempout1, out[8..15]=tempout2, out[15]=tempout3, out=out); 
+
+//Output for zr
+//First, we have to make the input to 1 bit wide only, therefore,
+//we put the 16 bits input to or gate so it will pass the output
+//as it is and will not alter the output which will then cause the result to change
+
+//Build output for zr. Since input 0 cause output to become 1, I use Not gate.
+Or8Way(in=tempout1, out=forzrout1); //out is now 1 bit wide
+Or8Way(in=tempout2, out=forzrout2);
+Or(a=forzrout1, b=forzrout2, out=forzrout);
+Not(in=forzrout, out=zr);
+
+//Output for ng, since output is <0,ng=1, we will be using And gate
+And(a=tempout3, b=true, out=ng);
+}

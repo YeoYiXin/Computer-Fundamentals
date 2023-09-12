@@ -1,0 +1,17 @@
+CHIP Computer {
+
+    IN reset;
+
+    PARTS:
+
+    // Supply the 3 parts of the Computer Chip as follows:
+
+    // CPU
+    CPU(inM=inM, instruction=instruction, reset=reset, outM=outM, writeM=outwriteIntoM, addressM=outAddrM, pc=outPc);
+
+    // RAM
+    Memory(in=outM, load=outwriteIntoM, address=outAddrM, out=inM);
+
+    // ROM
+    ROM32K(address=outPc, out=instruction);  
+}

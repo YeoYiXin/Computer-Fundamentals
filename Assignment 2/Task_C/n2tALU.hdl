@@ -1,0 +1,107 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/02/ALU.hdl
+
+/**
+ * The n2tALU (Arithmetic Logic Unit). is the ALU designed in the Nand2Tetris project 
+ * Computes one of the following functions:
+ * x+y, x-y, y-x, 0, 1, -1, x, y, -x, -y, !x, !y,
+ * x+1, y+1, x-1, y-1, x&y, x|y on two 16-bit inputs, 
+ * according to 6 input bits denoted zx,nx,zy,ny,f,no.
+ * In addition, the ALU computes two 1-bit outputs:
+ * if the ALU output == 0, zr is set to 1; otherwise zr is set to 0;
+ * if the ALU output < 0, ng is set to 1; otherwise ng is set to 0.
+ */
+
+// Implementation: the ALU logic manipulates the x and y inputs
+// and operates on the resulting values, as follows:
+// if (zx == 1) set x = 0        // 16-bit constant
+// if (nx == 1) set x = !x       // bitwise not
+// if (zy == 1) set y = 0        // 16-bit constant
+// if (ny == 1) set y = !y       // bitwise not
+// if (f == 1)  set out = x + y  // integer 2's complement addition
+// if (f == 0)  set out = x & y  // bitwise and
+// if (no == 1) set out = !out   // bitwise not
+// if (out == 0) set zr = 1
+// if (out < 0) set ng = 1
+
+CHIP n2tALU {
+    IN  
+        x[16], y[16],  // 16-bit inputs        
+        zx, // zero the x input?
+        nx, // negate the x input?
+        zy, // zero the y input?
+        ny, // negate the y input?
+        f,  // compute out = x + y (if 1) or x & y (if 0)
+        no; // negate the out output?
+
+    OUT 
+        out[16], // 16-bit output
+        zr, // 1 if (out == 0), 0 otherwise
+        ng; // 1 if (out < 0),  0 otherwise
+
+    PARTS:
+//First, for x, we need two multiplexor, each with selector zx and nx and then 
+//for y, we neeed another two multiplexor, each with selector zy and ny.
+//The inputs for the second selector (with sel=nx for xand sel=ny for y) will be negated.
+//Hence, the two inputs for second multiplexor will be the output of the first multiplexor
+//that has not been negated and another one that has been negated. Then, according
+//to the selector nx or ny, the output will be chosen.
+//After that, the output of the second multiplexor of both x and y will be the inputs
+//for the And gate which can receive 16 bits input and Full adder which can receive 16 bits input.
+//It will then fo through the multiplexor to choose which desired output it wants, whether it is
+//the output from And16 or output from full adder. The output of this multiplexor will
+//then be negate by a Not gate. 
+//The two input for the final multiplexor will be the the output that has been negated and the
+//output which has not been negated. 
+//The selector for the final multiplexor is no, which will then choose the final desired output.
+
+//Input x
+Mux16(a=x, b=false, sel=zx, out=firstselx); //First selector
+Not16(in=firstselx, out=notfirstselx);//Negate the output of first multiplexor for x
+Mux16(a=firstselx, b=notfirstselx, sel=nx, out=xsel); //Output of second multiplexor
+
+//Input y
+Mux16(a=y, b=false, sel=zy, out=firstsely); //First selector
+Not16(in=firstsely, out=notfirstsely);//Negate the output of first multiplexor for y
+Mux16(a=firstsely, b=notfirstsely, sel=ny, out=ysel); //Output of second multiplexor
+
+//AND16
+And16(a=xsel, b=ysel, out=andout); //output for and16
+
+//Full adder
+Add16(a=xsel, b=ysel, out=addout); //output for add16
+
+//Output for multiplexor to choose between and16 and add16
+Mux16(a=andout, b=addout, sel=f, out=chooseout);
+
+//Output for the first out
+//the output for the multiplexer will be separated into 3 sections.
+//First one is the two out which will be used to obtain the output for zr.
+//Since there is no built-in Or16Way, I have to divide the output to two sections,
+//each storing 8-bits wide input. The output for the built-in Or8Way is then merge
+//by using Or gate to get 1 bit wide output.
+//The second one is output for ng which only requires the 15th bit (count from right to left) 
+//as when the first digit is 1, it means that the output is a negative value, 
+//which will cause ng to be 1.
+//The third output is the value of output for the multiplexer.
+Not16(in=chooseout, out=notchooseout);//Negate the output of the previous output
+Mux16(a=chooseout, b=notchooseout, sel=no, out[0..7]=tempout1, out[8..15]=tempout2, out[15]=tempout3, out=out); 
+
+
+//Output for zr
+//First, we have to make the input to 1 bit wide only, therefore,
+//we put the 16 bits input to or gate so it will pass the output
+//as it is and will not alter the output which will then cause the result to change
+
+//Build output for zr. Since input 0 cause output to become 1, I use Not gate.
+Or8Way(in=tempout1, out=forzrout1); //out is now 1 bit wide
+Or8Way(in=tempout2, out=forzrout2);
+Or(a=forzrout1, b=forzrout2, out=forzrout);
+Not(in=forzrout, out=zr);
+
+
+//Output for ng, since output is <0,ng=1, we will be using And gate
+And(a=tempout3, b=true, out=ng); 
+}

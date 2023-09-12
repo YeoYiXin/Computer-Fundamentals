@@ -1,0 +1,33 @@
+CHIP MyAdd16 {
+    IN a[16], b[16];
+    OUT out[16];
+
+    PARTS:	
+//Since it is similar to full adder 1 bit because the only difference is that each input now is 16 bits
+//wide, we have to add it all up. The first bit will have to be added as half adder because
+//if both the input a's and b's first bit are 1, then it will overflow and hence, there is a need
+//to put the 1 at carry and 0 at sum. If it is not overflowed, then it will transfer 0 to the Carry which is needed //as one of the inputs in the full adder.
+//This is because full adder needs 3 inputs and there are only 2 inputs currently so the input
+//is insufficient for the full adder to perform.
+//After the first chip which is half adder is built in, the following calculations will all be conducted
+//by the built-in chip which is MyFulladder.
+//The overflow value which will represent as carry(number) and act as input for the third input
+//so that the next adder will continue to have 3 inputs.
+
+MyHalfadder(a=a[0], b=b[0], carry=halfcarry, sum=out[0]); //out[0] represents the output value for 1st bit
+MyFulladder(a=a[1], b=b[1], c=halfcarry, carry=fullcarry1, sum=out[1]);
+MyFulladder(a=a[2], b=b[2], c=fullcarry1, carry=fullcarry2, sum=out[2]);
+MyFulladder(a=a[3], b=b[3], c=fullcarry2, carry=fullcarry3, sum=out[3]);
+MyFulladder(a=a[4], b=b[4], c=fullcarry3, carry=fullcarry4, sum=out[4]);
+MyFulladder(a=a[5], b=b[5], c=fullcarry4, carry=fullcarry5, sum=out[5]);
+MyFulladder(a=a[6], b=b[6], c=fullcarry5, carry=fullcarry6, sum=out[6]);
+MyFulladder(a=a[7], b=b[7], c=fullcarry6, carry=fullcarry7, sum=out[7]);
+MyFulladder(a=a[8], b=b[8], c=fullcarry7, carry=fullcarry8, sum=out[8]);
+MyFulladder(a=a[9], b=b[9], c=fullcarry8, carry=fullcarry9, sum=out[9]);
+MyFulladder(a=a[10], b=b[10], c=fullcarry9, carry=fullcarry10, sum=out[10]);
+MyFulladder(a=a[11], b=b[11], c=fullcarry10, carry=fullcarry11, sum=out[11]);
+MyFulladder(a=a[12], b=b[12], c=fullcarry11, carry=fullcarry12, sum=out[12]);
+MyFulladder(a=a[13], b=b[13], c=fullcarry12, carry=fullcarry13, sum=out[13]);
+MyFulladder(a=a[14], b=b[14], c=fullcarry13, carry=fullcarry14, sum=out[14]);
+MyFulladder(a=a[15], b=b[15], c=fullcarry14, carry=fullcarry15, sum=out[15]);
+}

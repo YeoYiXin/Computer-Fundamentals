@@ -1,0 +1,24 @@
+CHIP Plant{
+IN A,B,C;
+OUT out;
+
+//My working for simplifying the boolean expression:
+// P(A,B,C) = A'B'C + A'BC' + A'BC + ABC'
+//          = A'B'C + A'BC + A'BC' + ABC'  [Rearranging the boolean expression]
+//          = A'C(B'+B) + A'BC' + ABC'  [Distributive Law]
+//          = A'C1 + A'BC' + ABC'  [Inverse Law, B'+ B = 1]
+//          = A'C + A'BC' + ABC'
+//          = A'C + BC'(A'+ A)  [Distributive Law]
+//          = A'C + BC'1  [Inverse Law, A'+ A = 1] 
+//          = A'C + BC'
+// P(A,B,C) = A'C + BC'
+// Hence, it requires 2 NOT gate, 2 AND gate and 1 OR gate
+// But, I can duplicate the same circuit by replacing the 2 NOT gate with 1 NAND gate.
+// Now, the circuit will have 1 NAND gate, 2 AND gate and 1 OR gate
+
+PARTS:
+Nand(a=A, b=C, out=AC1);
+And(a=AC1, b=C, out=AC1C);
+And(a=B, b=AC1, out=BAC1);
+Or(a=AC1C, b=BAC1, out=out);
+}

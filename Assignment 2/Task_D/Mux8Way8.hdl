@@ -1,0 +1,108 @@
+// This file is adapted from part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+
+/**
+ * 8-way 8-bit multiplexor:
+ * out = a if sel == 000
+ *       b if sel == 001
+ *       etc.
+ *       h if sel == 111
+ */
+
+CHIP Mux8Way8 {
+    IN a[8], b[8], c[8], d[8],
+       e[8], f[8], g[8], h[8],
+       sel[3];
+    OUT out[8];
+
+    PARTS:
+	//This chip will be used in the building of RAM8
+	//To build this, we use the built-in chips Mux8
+	//First, we need the first section with 4 Mux, each accepting 2 inputs.
+	//The selector will choose the output and the 4 outputs will become the
+	//inputs for the 2 Mux, each accepting 2 inputs which will then 
+	//gives us 2 outputs. The 2 outputs will become the inputs for the
+	//7th Mux and the 7th mux will select the final output.
+
+	//for a and b
+	Mux(a=a[0],b=b[0],sel=sel[0],out=ab0);
+	Mux(a=a[1],b=b[1],sel=sel[0],out=ab1);
+	Mux(a=a[2],b=b[2],sel=sel[0],out=ab2);
+	Mux(a=a[3],b=b[3],sel=sel[0],out=ab3);
+	Mux(a=a[4],b=b[4],sel=sel[0],out=ab4);
+	Mux(a=a[5],b=b[5],sel=sel[0],out=ab5);
+	Mux(a=a[6],b=b[6],sel=sel[0],out=ab6);
+	Mux(a=a[7],b=b[7],sel=sel[0],out=ab7);
+
+	//for c and d
+	Mux(a=c[0],b=d[0],sel=sel[0],out=cd0);
+	Mux(a=c[1],b=d[1],sel=sel[0],out=cd1);
+	Mux(a=c[2],b=d[2],sel=sel[0],out=cd2);
+	Mux(a=c[3],b=d[3],sel=sel[0],out=cd3);
+	Mux(a=c[4],b=d[4],sel=sel[0],out=cd4);
+	Mux(a=c[5],b=d[5],sel=sel[0],out=cd5);
+	Mux(a=c[6],b=d[6],sel=sel[0],out=cd6);
+	Mux(a=c[7],b=d[7],sel=sel[0],out=cd7);
+
+	//for e and f
+	Mux(a=e[0],b=f[0],sel=sel[0],out=ef0);
+	Mux(a=e[1],b=f[1],sel=sel[0],out=ef1);
+	Mux(a=e[2],b=f[2],sel=sel[0],out=ef2);
+	Mux(a=e[3],b=f[3],sel=sel[0],out=ef3);
+	Mux(a=e[4],b=f[4],sel=sel[0],out=ef4);
+	Mux(a=e[5],b=f[5],sel=sel[0],out=ef5);
+	Mux(a=e[6],b=f[6],sel=sel[0],out=ef6);
+	Mux(a=e[7],b=f[7],sel=sel[0],out=ef7);
+
+	//for g and h
+	Mux(a=g[0],b=h[0],sel=sel[0],out=gh0);
+	Mux(a=g[1],b=h[1],sel=sel[0],out=gh1);
+	Mux(a=g[2],b=h[2],sel=sel[0],out=gh2);
+	Mux(a=g[3],b=h[3],sel=sel[0],out=gh3);
+	Mux(a=g[4],b=h[4],sel=sel[0],out=gh4);
+	Mux(a=g[5],b=h[5],sel=sel[0],out=gh5);
+	Mux(a=g[6],b=h[6],sel=sel[0],out=gh6);
+	Mux(a=g[7],b=h[7],sel=sel[0],out=gh7);
+
+	//for abcd
+	Mux(a=ab0,b=cd0,sel=sel[1],out=abcd0);
+	Mux(a=ab1,b=cd1,sel=sel[1],out=abcd1);
+	Mux(a=ab2,b=cd2,sel=sel[1],out=abcd2);
+	Mux(a=ab3,b=cd3,sel=sel[1],out=abcd3);
+	Mux(a=ab4,b=cd4,sel=sel[1],out=abcd4);
+	Mux(a=ab5,b=cd5,sel=sel[1],out=abcd5);
+	Mux(a=ab6,b=cd6,sel=sel[1],out=abcd6);
+	Mux(a=ab7,b=cd7,sel=sel[1],out=abcd7);
+
+	//for efgh
+	Mux(a=ef0,b=gh0,sel=sel[1],out=efgh0);
+	Mux(a=ef1,b=gh1,sel=sel[1],out=efgh1);
+	Mux(a=ef2,b=gh2,sel=sel[1],out=efgh2);
+	Mux(a=ef3,b=gh3,sel=sel[1],out=efgh3);
+	Mux(a=ef4,b=gh4,sel=sel[1],out=efgh4);
+	Mux(a=ef5,b=gh5,sel=sel[1],out=efgh5);
+	Mux(a=ef6,b=gh6,sel=sel[1],out=efgh6);
+	Mux(a=ef7,b=gh7,sel=sel[1],out=efgh7);
+	
+	//for out (with 1-bit wide big)
+	Mux(a=abcd0,b=efgh0,sel=sel[2],out=out0);
+	Mux(a=abcd1,b=efgh1,sel=sel[2],out=out1);
+	Mux(a=abcd2,b=efgh2,sel=sel[2],out=out2);
+	Mux(a=abcd3,b=efgh3,sel=sel[2],out=out3);
+	Mux(a=abcd4,b=efgh4,sel=sel[2],out=out4);
+	Mux(a=abcd5,b=efgh5,sel=sel[2],out=out5);
+	Mux(a=abcd6,b=efgh6,sel=sel[2],out=out6);
+	Mux(a=abcd7,b=efgh7,sel=sel[2],out=out7);
+
+	//to combine everything to become 8-bits wide
+	Or(a=out0, b=false, out=out[0]);
+	Or(a=out1, b=false, out=out[1]);
+	Or(a=out2, b=false, out=out[2]);
+	Or(a=out3, b=false, out=out[3]);
+	Or(a=out4, b=false, out=out[4]);
+	Or(a=out5, b=false, out=out[5]);
+	Or(a=out6, b=false, out=out[6]);
+	Or(a=out7, b=false, out=out[7]);
+
+}

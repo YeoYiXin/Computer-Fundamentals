@@ -1,0 +1,23 @@
+CHIP MyNot16 {
+    IN in[16]; //input in is 16 bits wide
+    OUT out[16]; //means out is 16 bits wide to match the input
+
+PARTS:
+//This is NOT gate which accepts 16-bits wide input and returns output which is also 16-bits wide.
+Nand(a=in[0], b=in[0], out=out[0]); //evaluate 1st binary digit of input in and then determine output
+Nand(a=in[1], b=in[1], out=out[1]); //evaluate 2nd binary digit of input in and then determine output
+Nand(a=in[2], b=in[2], out=out[2]); //evaluate 3rd binary digit of input in and then determine output
+Nand(a=in[3], b=in[3], out=out[3]); //evaluate 4th binary digit of input in and then determine output
+Nand(a=in[4], b=in[4], out=out[4]); //evaluate 5th binary digit of input in and then determine output
+Nand(a=in[5], b=in[5], out=out[5]); //evaluate 6th binary digit of input in and then determine output
+Nand(a=in[6], b=in[6], out=out[6]); //evaluate 7th binary digit of input in and then determine output
+Nand(a=in[7], b=in[7], out=out[7]); //evaluate 8th binary digit of input in and then determine output
+Nand(a=in[8], b=in[8], out=out[8]); //evaluate 9th binary digit of input in and then determine output
+Nand(a=in[9], b=in[9], out=out[9]); //evaluate 10th binary digit of input in and then determine output
+Nand(a=in[10], b=in[10], out=out[10]); //evaluate 11th binary digit of input in and then determine output
+Nand(a=in[11], b=in[11], out=out[11]); //evaluate 12th binary digit of input in and then determine output
+Nand(a=in[12], b=in[12], out=out[12]); //evaluate 13th binary digit of input in and then determine output
+Nand(a=in[13], b=in[13], out=out[13]); //evaluate 14th binary digit of input in and then determine output
+Nand(a=in[14], b=in[14], out=out[14]); //evaluate 15th binary digit of input in and then determine output
+Nand(a=in[15], b=in[15], out=out[15]); //evaluate 16th binary digit of input in and then determine output
+}
